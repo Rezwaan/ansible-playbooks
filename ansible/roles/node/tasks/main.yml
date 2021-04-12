@@ -1,26 +1,12 @@
 ---
 # tasks file for nginx
 
-- name: Installs nginx web server
-  apt: pkg=nginx state=installed update_cache=true
+- name: Update apt cache
+  apt: update_cache=yes cache_valid_time=3600
+  become: yes
 
-- name: add apt key for nodesource
-apt_key: url=https://deb.nodesource.com/gpgkey/nodesource.gpg.key
-
-- name: add repo for nodesource
-  apt_repository:
-        repo: 'deb https://deb.nodesource.com/node_0.10 {{ ansible_distribution_release }} main'
-        update_cache: yes
-
-- name: install nodejs
-  apt: name=nodejs
-
-- name: install NPM
-      shell: npm i
-      args:
-        chdir: /home/ubuntu
-
-- name: Install PM2
-  npm:
-    name: pm2
-    global: yes
+- name: Install node.js
+  apt: name={{ item }} state=present
+  become: yes
+  with_items:
+    - nodejs
