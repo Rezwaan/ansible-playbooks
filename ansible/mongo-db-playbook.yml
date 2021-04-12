@@ -1,4 +1,4 @@
 - hosts: webservers
 
   roles:
-    - node
+    - mongo-db

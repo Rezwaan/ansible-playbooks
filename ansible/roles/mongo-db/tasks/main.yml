@@ -1,24 +1,24 @@
 ---
-- name: Install mongodb
-  apt:
-    name: mongodb-org
-    state: present
-    allow_unauthenticated: yes
-
-- name: Create systemd service file
-  template:
-    src: mongod.service
-    dest: /etc/systemd/system/mongodb.service
-
-- name: Enable Mongod service
-  command: systemctl enable mongodb.service
+- name: Update apt cache
+  apt: update_cache=yes cache_valid_time=3600
   become: yes
-  when: env == 'dev'
+
+- name: install mongoDB
+  apt: 
+    name: mongodb
+    state: present
 
 - name: Copy MongoDB configuration file
   template:
     src: mongod.conf
     dest: /etc/mongod.conf
+
+# - name: Create a directory if it does not exist
+#   ansible.builtin.file:
+#     path: /{{ playbook_dir }}/passwords/{{ env }}/mongodb-key
+#     state: directory
+#     mode: '0755'
+
 - name: Prepare authorization key file
   local_action: shell openssl rand -base64 756 > {{ playbook_dir }}/passwords/{{ env }}/mongodb-key
   when: database_replica_type == "master"
